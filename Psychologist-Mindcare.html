@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Digital Wellness Platform</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind with a calming color palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-teal': '#20B2AA', // Light Sea Green / Calming Teal
+                        'secondary-lavender': '#93C5FD', // Light Blue/Lavender for contrast
+                        'accent-light': '#F0F9FF', // Sky 50 (Very light blue)
+                        'mind-bg': '#F9FAFB', // Lightest gray for calm background
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        pulse_calm: {
+                            '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                            '50%': { opacity: 0.8, transform: 'scale(0.99)' },
+                        }
+                    },
+                    animation: {
+                        pulse_calm: 'pulse_calm 2s ease-in-out infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .search-btn {
+            animation: pulse_calm 3s ease-in-out infinite;
+        }
+
+        .search-btn:hover {
+            box-shadow: 0 0 20px rgba(32, 178, 170, 0.6);
+            transform: translateY(-2px);
+            animation: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hero-bg {
+            background: linear-gradient(180deg, #F9FAFB 0%, #E0F7F9 100%);
+        }
+        
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .visible-section {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            min-height: 80px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-mind-bg text-gray-800 antialiased">
+
+    <!-- Header / Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo: MindCare -->
+                <a href="#" class="flex items-center space-x-2" onclick="showView('home')">
+                    <!-- SVG Lotus/Wellness Icon -->
+                    <svg class="w-8 h-8 text-primary-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    <span class="text-2xl font-bold text-gray-900">MindCare</span>
+                </a>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-600 hover:text-primary-teal transition duration-150" onclick="checkAuthAndShowBooking()">Book Now</a>
+                    <a href="#services" class="text-gray-600 hover:text-primary-teal transition duration-150" onclick="showView('home')">Services</a>
+                    <a href="#" class="text-gray-600 hover:text-primary-teal transition duration-150" onclick="showView('login')">Admin Login</a>
+                </nav>
+
+                <!-- Primary CTA Button -->
+                <div class="hidden md:block space-x-3">
+                    <button class="px-5 py-2 text-sm font-semibold text-primary-teal border border-primary-teal rounded-full shadow-sm hover:bg-primary-teal/10 transition duration-300" onclick="showView('signup')">
+                        Register
+                    </button>
+                    <button class="px-5 py-2 text-sm font-semibold text-white bg-secondary-lavender rounded-full shadow-lg hover:bg-blue-400 transition duration-300" onclick="showView('login')">
+                        Sign In
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 transition duration-150">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-primary-teal/10" onclick="checkAuthAndShowBooking()">Book Now</a>
+                <a href="#services" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-primary-teal/10" onclick="showView('home')">Services</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-primary-teal/10" onclick="showView('login')">Admin Login</a>
+                <button class="w-full text-left mt-2 px-3 py-2 text-sm font-semibold text-primary-teal border border-primary-teal rounded-full hover:bg-primary-teal/10 transition duration-300" onclick="showView('signup')">Register</button>
+                <button class="w-full text-left mt-2 px-3 py-2 text-sm font-semibold text-white bg-secondary-lavender rounded-full hover:bg-blue-400 transition duration-300" onclick="showView('login')">Sign In</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-[80vh]">
+        <!-- Dynamic Content Container -->
+        <div id="content-container">
+            <!-- 1. HOME VIEW (Initial Content) -->
+            <section id="view-home" class="hero-bg py-20 sm:py-32 fade-in-section visible-section">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    <!-- Hero Content with Image (Updated to use image placeholder) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <!-- Text and CTA -->
+                        <div class="text-center md:text-left">
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 leading-tight">
+                                Cultivate Your Inner Peace. <br class="hidden sm:inline"> Start With MindCare.
+                            </h1>
+                            <p class="mt-4 text-xl text-gray-600 max-w-lg md:max-w-full">
+                                Connect with certified Australian mental wellness professionals instantly. Securely book your session today.
+                            </p>
+
+                            <!-- Simplified Booking Action -->
+                            <div class="mt-8 max-w-sm md:max-w-full" id="booking">
+                                <p class="text-sm font-semibold text-primary-teal mb-3 uppercase tracking-wider">Book a Video Session</p>
+                                <div class="bg-white p-4 rounded-xl shadow-2xl flex items-center justify-between space-x-4 border border-gray-100">
+                                    <div class="flex-1 text-left">
+                                        <p class="text-lg font-bold text-gray-900">Online Zoom Session</p>
+                                        <p class="text-sm text-gray-600">Find the perfect professional for your needs.</p>
+                                    </div>
+                                    
+                                    <button class="search-btn flex-shrink-0 px-6 py-3 text-sm font-bold text-white bg-primary-teal rounded-lg transition duration-300 transform shadow-md hover:bg-teal-600" onclick="checkAuthAndShowBooking()">
+                                        Book Now
+                                    </button>
+                                </div>
+                                <p class="mt-3 text-xs text-gray-500 text-left">
+                                    Secure your telehealth appointment with a vetted professional.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Doctor Image Placeholder (Image URL for visual representation) -->
+                        <div class="hidden md:flex justify-center md:justify-end">
+                            <img
+                                src="https://placehold.co/400x480/20B2AA/FFFFFF?text=Australian+Female+Doctor"
+                                alt="Placeholder image of a smiling Australian female doctor."
+                                class="w-full max-w-md rounded-3xl shadow-2xl object-cover h-96 border-4 border-white transform hover:scale-[1.01] transition duration-500 ease-in-out"
+                                onerror="this.onerror=null; this.src='https://placehold.co/400x480/93C5FD/000000?text=Image+Not+Loaded';"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20" id="services">
+                    <div class="text-center mb-12">
+                        <span class="text-secondary-lavender font-semibold uppercase tracking-wider">Our Core Services</span>
+                        <h2 class="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                            Specialized Psychological Support Services
+                        </h2>
+                        <p class="mt-4 text-lg text-gray-600">Access a wide range of specialized therapies tailored to your mental health journey.</p>
+                    </div>
+                    
+                    <div id="services-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                        <!-- Services generated by JavaScript -->
+                    </div>
+                    
+                    <!-- Call to Action for Services -->
+                    <div class="mt-12 text-center">
+                        <button class="search-btn px-10 py-4 text-lg font-bold text-white bg-secondary-lavender rounded-full shadow-xl hover:bg-blue-400 transition duration-300" onclick="checkAuthAndShowBooking()">
+                            Book an Appointment
+                        </button>
+                    </div>
+                     <!-- 2. How it works Section -->
+            <div class="py-12 bg-accent-light rounded-xl mb-16">
+                <h3 class="text-4xl font-bold text-gray-900 text-center mb-12">
+                    How MindCare Works
+                </h3>
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-secondary-lavender transition duration-300 hover:shadow-xl">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-secondary-lavender text-white text-xl font-bold mb-4">1</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Find a Professional</h4>
+                        <p class="text-gray-600">Browse licensed psychologists by specialty, focus area, and availability.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-secondary-lavender transition duration-300 hover:shadow-xl">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-secondary-lavender text-white text-xl font-bold mb-4">2</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Book and Pay</h4>
+                        <p class="text-gray-600">Select your preferred date, time, and session duration (30 min, 1 hr, or 2 hrs) to confirm.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-lg border-t-4 border-secondary-lavender transition duration-300 hover:shadow-xl">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full bg-secondary-lavender text-white text-xl font-bold mb-4">3</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Start Your Consultation</h4>
+                        <p class="text-gray-600">Join your confidential video session at the scheduled time using the provided link.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Benefits of Online Consultation Section -->
+            <div class="py-12 mb-16">
+                <h3 class="text-4xl font-bold text-gray-900 text-center mb-12">
+                    Why Choose Online Therapy?
+                </h3>
+                <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
+                    <!-- Benefit 1: Convenience -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-2xl">
+                        <div class="text-5xl text-primary-teal mb-4">🏡</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Maximum Convenience</h4>
+                        <p class="text-gray-600">Consult from the privacy and comfort of your home, office, or wherever you feel most relaxed.</p>
+                    </div>
+                    <!-- Benefit 2: Accessibility -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-2xl">
+                        <div class="text-5xl text-primary-teal mb-4">🗓️</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Flexible Scheduling</h4>
+                        <p class="text-gray-600">Easily find appointments that fit your busy schedule without commuting time.</p>
+                    </div>
+                    <!-- Benefit 3: Privacy & Security -->
+                    <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-xl transition duration-300 hover:scale-[1.03] hover:shadow-2xl">
+                        <div class="text-5xl text-primary-teal mb-4">🔒</div>
+                        <h4 class="text-xl font-semibold text-gray-900 mb-2">Confidential & Secure</h4>
+                        <p class="text-gray-600">Our platform ensures all your sessions and data are protected with the highest level of security.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Still delaying your health concerns? Consult now (strip) -->
+            <div class="bg-primary-teal/90 rounded-xl shadow-2xl p-8 md:p-12 mb-16 flex flex-col md:flex-row justify-between items-center text-white text-center md:text-left">
+                <div class="mb-6 md:mb-0">
+                    <h4 class="text-3xl sm:text-4xl font-extrabold mb-2">Still delaying your health concerns?</h4>
+                    <p class="text-lg opacity-90">Take the first step towards a healthier, happier mind today.</p>
+                </div>
+                <button onclick="showView('services')" class="px-8 py-3 text-lg font-bold rounded-full text-primary-teal bg-white hover:bg-gray-100 transition duration-300 transform hover:scale-105 shadow-lg">
+                    Consult Now &rarr;
+                </button>
+            </div>
+
+
+            <!-- 5. FAQs Section -->
+            <div class="py-12 bg-white rounded-xl shadow-lg mb-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h3 class="text-4xl font-bold text-gray-900 text-center mb-12">
+                    Frequently Asked Questions
+                </h3>
+                <div id="faq-accordion" class="space-y-4">
+                    
+                    <!-- FAQ Item 1 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left p-5 text-lg font-semibold flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition duration-150" onclick="toggleFaq(this)">
+                            What services do you offer?
+                            <svg class="w-5 h-5 text-secondary-lavender transition-transform duration-300 transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <p class="p-5 text-gray-600 bg-white border-t border-gray-100">
+                                We offer a range of specialized services including Cognitive Behavioral Therapy (CBT), Mindfulness & Stress Reduction, Grief & Loss Counseling, and Couples & Relationship Therapy. You can browse all options in our Services section.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 2 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left p-5 text-lg font-semibold flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition duration-150" onclick="toggleFaq(this)">
+                            How does online payment work?
+                            <svg class="w-5 h-5 text-secondary-lavender transition-transform duration-300 transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <p class="p-5 text-gray-600 bg-white border-t border-gray-100">
+                                Payment is required upon booking your session. We currently accept major credit/debit cards. The session costs are: 30 mins - $150 (AUD), 1 hour - $200 (AUD), and 2 hours - $300 (AUD).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Item 3 -->
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button class="w-full text-left p-5 text-lg font-semibold flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition duration-150" onclick="toggleFaq(this)">
+                            Is my session confidential?
+                            <svg class="w-5 h-5 text-secondary-lavender transition-transform duration-300 transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <p class="p-5 text-gray-600 bg-white border-t border-gray-100">
+                                Absolutely. We adhere to strict privacy and confidentiality protocols. All video consultations are conducted over a secure, encrypted platform, and your personal data is protected in accordance with mental health regulations.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                </div>
+
+            </section>
+            
+            <!-- 2. LOGIN VIEW -->
+            <section id="view-login" class="hidden py-20 bg-mind-bg fade-in-section">
+                <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+                        <h2 class="text-3xl font-bold text-gray-900 text-center mb-6">Welcome Back to MindCare</h2>
+                        <form onsubmit="handleLogin(event)">
+                            <div class="mb-4">
+                                <label for="login-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="login-email" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-teal focus:border-primary-teal outline-none" placeholder="you@example.com" required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                                <input type="password" id="login-password" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-teal focus:border-primary-teal outline-none" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="w-full py-3 text-lg font-bold text-white bg-primary-teal rounded-lg shadow-md hover:bg-teal-600 transition duration-300">
+                                Sign In
+                            </button>
+                        </form>
+                        <p id="login-message" class="mt-4 text-center text-sm text-red-500 hidden"></p>
+                        <p class="mt-6 text-center text-sm text-gray-600">
+                            New user? <a href="#" onclick="showView('signup')" class="font-medium text-secondary-lavender hover:text-blue-500">Create an account</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. SIGNUP VIEW -->
+            <section id="view-signup" class="hidden py-20 bg-mind-bg fade-in-section">
+                <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl border border-gray-100">
+                        <h2 class="text-3xl font-bold text-gray-900 text-center mb-6">Create Your MindCare Account</h2>
+                        <form onsubmit="handleSignup(event)">
+                            <div class="mb-4">
+                                <label for="signup-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" id="signup-name" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-teal focus:border-primary-teal outline-none" placeholder="Jane Doe" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="signup-email" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-teal focus:border-primary-teal outline-none" placeholder="you@example.com" required>
+                            </div>
+                            <div class="mb-6">
+                                <label for="signup-password" class="block text-sm font-medium text-gray-700">Password (min 6 characters)</label>
+                                <input type="password" id="signup-password" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-primary-teal focus:border-primary-teal outline-none" placeholder="••••••••" required minlength="6">
+                            </div>
+                            <button type="submit" class="w-full py-3 text-lg font-bold text-white bg-secondary-lavender rounded-lg shadow-md hover:bg-blue-500 transition duration-300">
+                                Register Account
+                            </button>
+                        </form>
+                        <p id="signup-message" class="mt-4 text-center text-sm text-primary-teal hidden"></p>
+                        <p class="mt-6 text-center text-sm text-gray-600">
+                            Already have an account? <a href="#" onclick="showView('login')" class="font-medium text-primary-teal hover:text-teal-600">Sign In</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. BOOKING VIEW (New for scheduling) -->
+            <section id="view-booking" class="hidden py-16 bg-mind-bg fade-in-section">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Book Your Zoom Session</h2>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-2xl border border-gray-100 space-y-8">
+                        
+                        <!-- Step 1: Select Professional -->
+                        <div>
+                            <h3 class="text-2xl font-bold mb-4 text-primary-teal border-b pb-2">1. Select Your Professional</h3>
+                            <div id="professional-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Professionals rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Select Date & Time (Requires professional selection) -->
+                        <div id="scheduling-steps" class="space-y-6 opacity-50 pointer-events-none transition duration-300">
+                            <h3 class="text-2xl font-bold mb-4 text-primary-teal border-b pb-2">2. Select Date & Time (All slots are Zoom meetings)</h3>
+                            
+                            <!-- Date Selector -->
+                            <div id="booking-calendar-container" class="bg-accent-light p-4 rounded-lg">
+                                <!-- Calendar rendered here -->
+                            </div>
+
+                            <!-- Time Slots -->
+                            <div class="pt-4">
+                                <h4 class="text-xl font-semibold mb-3 text-gray-800">Available Time Slots for <span id="selected-date-display" class="text-secondary-lavender">...</span></h4>
+                                <div id="time-slots" class="flex flex-wrap gap-3">
+                                    <p class="text-gray-500 italic">Select a date above.</p>
+                                    <!-- Time slots rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Summary & Message -->
+                        <div id="booking-summary" class="bg-green-50 p-4 rounded-lg border border-green-200 hidden">
+                            <p class="font-bold text-green-700">Booking Successful!</p>
+                            <p id="booking-message" class="text-sm text-green-600"></p>
+                        </div>
+                        <p id="booking-error" class="text-red-500 text-sm hidden">Please select a professional, date, and time slot.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. USER DASHBOARD VIEW -->
+            <section id="view-user-dashboard" class="hidden py-10 fade-in-section">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-4xl font-extrabold text-gray-900">Welcome, <span id="user-name-display">User</span>!</h2>
+                        <button class="px-5 py-2 text-sm font-semibold text-white bg-gray-600 rounded-full hover:bg-gray-700 transition duration-300" onclick="handleLogout()">Log Out</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left: Appointments & History -->
+                        <div class="lg:col-span-1 space-y-8">
+                            
+                            <!-- Quick Booking -->
+                            <div class="bg-white p-6 rounded-xl shadow-xl border border-primary-teal/20">
+                                <h3 class="text-2xl font-bold mb-4 text-primary-teal border-b pb-2">Quick Book</h3>
+                                <p class="text-sm text-gray-600 mb-4">Find your next available slot quickly.</p>
+                                <button class="w-full py-3 text-lg font-bold text-white bg-secondary-lavender rounded-lg shadow-md hover:bg-blue-500 transition duration-300" onclick="checkAuthAndShowBooking()">
+                                    Book New Zoom Session
+                                </button>
+                            </div>
+
+                            <!-- Upcoming Sessions (Updated to include Zoom Links) -->
+                            <div>
+                                <h3 class="text-2xl font-bold mb-4 text-primary-teal border-b pb-2">My Upcoming Sessions</h3>
+                                <div id="user-appointments-list" class="space-y-4">
+                                    <!-- Appointment items generated by JS -->
+                                </div>
+                            </div>
+                            
+                            <!-- Digital Resources -->
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                                <h3 class="text-2xl font-bold mb-4 text-primary-teal border-b pb-2">Wellness Resources</h3>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-center space-x-2"><span class="text-primary-teal">&bull;</span> Guided Meditation Library</li>
+                                    <li class="flex items-center space-x-2"><span class="text-primary-teal">&bull;</span> Anxiety Coping Worksheets</li>
+                                    <li class="flex items-center space-x-2"><span class="text-primary-teal">&bull;</span> Journaling Prompts</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Calendar View -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+                                <h3 class="text-2xl font-bold mb-4 text-gray-900">My Wellness Calendar</h3>
+                                <div id="user-calendar-container">
+                                    <!-- Calendar rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. ADMIN DASHBOARD VIEW -->
+            <section id="view-admin-dashboard" class="hidden py-10 fade-in-section">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-4xl font-extrabold text-gray-900">Admin Panel: Clinic Overview</h2>
+                        <button class="px-5 py-2 text-sm font-semibold text-white bg-gray-600 rounded-full hover:bg-gray-700 transition duration-300" onclick="handleLogout()">Log Out</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left: Metrics/Summary -->
+                        <div class="lg:col-span-1 space-y-4">
+                            <h3 class="text-2xl font-bold mb-4 text-secondary-lavender border-b pb-2">Key Metrics</h3>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                                <p class="text-sm text-gray-500">Total Zoom Bookings (This Month)</p>
+                                <p class="text-3xl font-extrabold text-gray-900">145</p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                                <p class="text-sm text-gray-500">Pending Approvals</p>
+                                <p class="text-3xl font-extrabold text-gray-900 text-red-500">3</p>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold mt-8 mb-4 text-secondary-lavender border-b pb-2">Provider List</h3>
+                            <ul class="space-y-2 text-sm text-gray-700 bg-white p-6 rounded-xl shadow-md">
+                                <!-- Providers listed here by JS for consistency -->
+                            </ul>
+                        </div>
+                        
+                        <!-- Right: Calendar & Bookings (Updated for Zoom details) -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <!-- Calendar -->
+                            <div class="bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+                                <h3 class="text-2xl font-bold mb-4 text-gray-900">Clinic Appointment Schedule</h3>
+                                <div id="admin-calendar-container">
+                                    <!-- Calendar rendered here -->
+                                </div>
+                            </div>
+
+                            <!-- Recent Bookings Table -->
+                            <div class="bg-white p-6 rounded-xl shadow-xl border border-gray-100">
+                                <h3 class="text-2xl font-bold mb-4 text-gray-900">Recent Bookings & Requests</h3>
+                                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                                            <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                            <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Professional</th>
+                                            <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Zoom Link</th>
+                                            <th class="px-4 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200" id="admin-recent-bookings">
+                                        <!-- Dummy data generated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Modal for not logged in users -->
+            <div id="auth-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center p-4">
+                <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full">
+                    <h3 class="text-2xl font-bold text-red-600 mb-4">Access Denied</h3>
+                    <p class="text-gray-700 mb-6">You must be logged in to book an appointment.</p>
+                    <div class="flex justify-end space-x-3">
+                        <button class="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100" onclick="document.getElementById('auth-modal').classList.add('hidden')">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 text-sm font-medium text-white bg-primary-teal rounded-lg hover:bg-teal-600" onclick="showView('login'); document.getElementById('auth-modal').classList.add('hidden')">
+                            Go to Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white" id="contact">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <!-- Column 1: Logo & Mission -->
+                <div>
+                    <a href="#" class="flex items-center space-x-2 mb-4" onclick="showView('home')">
+                        <svg class="w-6 h-6 text-primary-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        <span class="text-xl font-bold">MindCare</span>
+                    </a>
+                    <p class="text-sm text-gray-400">Your partner in digital wellness and mental health booking.</p>
+                </div>
+
+                <!-- Column 2: Patients -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-primary-teal">For Users</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition duration-150" onclick="showView('login')">My Account</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Find a Therapist</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">FAQs</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Help & Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Providers -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-primary-teal">For Professionals</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition duration-150">Join MindCare</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Platform Features</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150" onclick="showView('login')">Admin Login</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Company -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-4 text-primary-teal">Company</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition duration-150">About Us</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Careers</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition duration-150">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-12 border-t border-gray-700 pt-8 text-center">
+                <p class="text-sm text-gray-500">&copy; 2025 MindCare. All rights reserved. Cultivate your peace.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Mock Data ---
+        const DUMMY_PROFESSIONALS = [
+            { id: 'dr_chen', name: 'Dr. Emily Chen, PhD', specialty: 'CBT/Anxiety', avatar: 'https://placehold.co/50x50/20B2AA/FFFFFF?text=EC' },
+            { id: 'caleb_jones', name: 'Caleb Jones, LCSW', specialty: 'DBT/Trauma', avatar: 'https://placehold.co/50x50/93C5FD/000000?text=CJ' },
+            { id: 'sarah_venti', name: 'Sarah Venti, MA', specialty: 'Family/Couples', avatar: 'https://placehold.co/50x50/FFD700/000000?text=SV' },
+        ];
+        
+        const PSYCHOLOGICAL_SERVICES = [
+            { name: "Cognitive Behavioral Therapy (CBT)", description: "Focuses on challenging and changing unhelpful cognitive distortions and behaviors.", icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.047A12.003 12.003 0 002.944 12v9h18v-9a12.003 12.003 0 00-1.382-5.056z" },
+            { name: "Dialectical Behavior Therapy (DBT)", description: "Teaches coping skills for managing distress, regulating emotions, and improving relationships.", icon: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 8h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4a2 2 0 012-2z" }, 
+            { name: "Interpersonal Therapy (IPT)", description: "Short-term therapy focusing on current relationship problems and social functioning.", icon: "M17 20h-4M5 20h4M12 4v4m0 12v-4m-6-8h12a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z" }, 
+            { name: "Mindfulness-Based Cognitive Therapy (MBCT)", description: "Combines cognitive therapy with meditative practices to interrupt automatic thought patterns.", icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" },
+            { name: "Psychodynamic Therapy", description: "Explores how unconscious patterns and past experiences influence present behavior.", icon: "M13 10V3L4 14h7v7l9-11h-7z" },
+        ];
+
+        const DUMMY_USERS = {
+            'user@example.com': { id: 'u1', name: 'Alex Johnson', role: 'user', password: 'password' },
+            'admin@mindcare.com': { id: 'a1', name: 'Dr. Admin', role: 'admin', password: 'admin' },
+        };
+        
+        let DUMMY_APPOINTMENTS = [
+            // Example Appointment with a mock Zoom Link
+            { id: 1, userId: 'u1', date: '2025-12-10', time: '10:00 AM', professionalId: 'dr_chen', professionalName: 'Dr. Emily Chen, PhD', type: 'Video Call', zoomLink: 'https://zoom.us/j/1000000001?pwd=mocklink1' },
+            { id: 2, userId: 'u1', date: '2025-12-17', time: '02:00 PM', professionalId: 'caleb_jones', professionalName: 'Caleb Jones, LCSW', type: 'Video Call', zoomLink: 'https://zoom.us/j/1000000002?pwd=mocklink2' },
+            
+            // Other Appointments (for Admin view)
+            { id: 3, userId: 'u2', date: '2025-12-10', time: '11:00 AM', professionalId: 'dr_chen', professionalName: 'Dr. Emily Chen, PhD', type: 'Video Call', zoomLink: 'https://zoom.us/j/1000000003?pwd=mocklink3' },
+            { id: 4, userId: 'u3', date: '2025-12-10', time: '03:00 PM', professionalId: 'sarah_venti', professionalName: 'Sarah Venti, MA', type: 'Video Call', zoomLink: 'https://zoom.us/j/1000000004?pwd=mocklink4' },
+        ];
+
+        // --- Global State & Auth ---
+        let currentState = {
+            user: null,
+            currentPage: 'home',
+            currentMonth: new Date(2025, 11), // December 2025
+            bookingMonth: new Date(2025, 11), // For the booking calendar
+            selectedProfessional: null,
+            selectedDate: null,
+            selectedTime: null,
+        };
+
+        // --- Utility Functions ---
+
+        function getDaysInMonth(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function getFirstDayOfMonth(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            return new Date(year, month, 1).getDay();
+        }
+        
+        function getAppointmentsForDay(dayOfMonth, monthDate, role, userId) {
+            const dayString = new Date(monthDate.getFullYear(), monthDate.getMonth(), dayOfMonth).toISOString().split('T')[0];
+            
+            let filteredAppts = DUMMY_APPOINTMENTS;
+            if (role === 'user') {
+                filteredAppts = DUMMY_APPOINTMENTS.filter(a => a.userId === userId);
+            }
+            
+            return filteredAppts.filter(appt => appt.date === dayString);
+        }
+
+        function mockGenerateZoomLink(bookingId) {
+            // Mock function to simulate a call to Zoom API
+            const randomId = Math.floor(1000000000 + Math.random() * 9000000000);
+            const randomPwd = Math.random().toString(36).substring(2, 7);
+            return `https://zoom.us/j/${randomId}?pwd=${randomPwd}`;
+        }
+        
+        // --- Core Router Function ---
+        function showView(viewName) {
+            document.querySelectorAll('section[id^="view-"]').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('visible-section');
+            });
+
+            const targetView = document.getElementById(`view-${viewName}`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                setTimeout(() => {
+                    targetView.classList.add('visible-section');
+                }, 10);
+            }
+
+            if (viewName === 'user-dashboard' && currentState.user) {
+                document.getElementById('user-name-display').textContent = currentState.user.name;
+                renderAppointmentsList(currentState.user.id);
+                renderCalendar('user-calendar-container', currentState.user.role, currentState.currentMonth);
+            } else if (viewName === 'admin-dashboard' && currentState.user) {
+                 renderCalendar('admin-calendar-container', currentState.user.role, currentState.currentMonth);
+                 renderAdminBookingsTable();
+            } else if (viewName === 'booking' && currentState.user) {
+                // Reset booking state
+                currentState.selectedProfessional = null;
+                currentState.selectedDate = null;
+                currentState.selectedTime = null;
+                document.getElementById('booking-summary').classList.add('hidden');
+                document.getElementById('scheduling-steps').classList.add('opacity-50', 'pointer-events-none');
+                renderProfessionalSelector();
+                renderBookingCalendar();
+                updateTimeSlots(); // Clear slots initially
+            }
+
+            currentState.currentPage = viewName;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function checkAuthAndShowBooking() {
+            if (currentState.user) {
+                showView('booking');
+            } else {
+                document.getElementById('auth-modal').classList.remove('hidden');
+            }
+        }
+
+
+        // --- Authentication Handlers (Simplified for example) ---
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const messageElement = document.getElementById('login-message');
+            messageElement.classList.add('hidden');
+            
+            const user = DUMMY_USERS[email];
+
+            if (user && user.password === password) {
+                currentState.user = user;
+                if (user.role === 'admin') {
+                    showView('admin-dashboard');
+                } else {
+                    showView('user-dashboard');
+                }
+            } else {
+                messageElement.textContent = 'Invalid email or password.';
+                messageElement.classList.remove('hidden');
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+            const name = document.getElementById('signup-name').value.trim();
+            const messageElement = document.getElementById('signup-message');
+
+            if (DUMMY_USERS[email]) {
+                messageElement.textContent = 'User already exists with this email.';
+                messageElement.classList.remove('hidden');
+                messageElement.classList.add('text-red-500');
+                messageElement.classList.remove('text-primary-teal');
+                return;
+            }
+
+            // Simulate user creation
+            const newId = 'u' + (Object.keys(DUMMY_USERS).length + 1);
+            DUMMY_USERS[email] = { id: newId, name, role: 'user', password };
+            currentState.user = DUMMY_USERS[email];
+            
+            messageElement.textContent = `Success! Account created for ${name}. Redirecting...`;
+            messageElement.classList.remove('hidden');
+            messageElement.classList.remove('text-red-500');
+            messageElement.classList.add('text-primary-teal');
+
+            setTimeout(() => {
+                showView('user-dashboard');
+            }, 1000);
+        }
+
+        function handleLogout() {
+            currentState.user = null;
+            showView('home');
+        }
+
+        // --- Service Rendering ---
+        function renderServices() {
+            const grid = document.getElementById('services-grid');
+            grid.innerHTML = ''; 
+
+            PSYCHOLOGICAL_SERVICES.forEach(service => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 border border-gray-100 transform hover:-translate-y-1 text-center";
+                
+                card.innerHTML = `
+                    <div class="p-3 bg-accent-light rounded-full inline-block mb-3">
+                        <svg class="w-7 h-7 text-primary-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${service.icon}"></path>
+                        </svg>
+                    </div>
+                    <h3 class="mt-2 text-md font-bold text-gray-900">${service.name}</h3>
+                    <p class="mt-1 text-sm text-gray-600 truncate">${service.description}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        // --- Dashboard Helpers ---
+        function renderAppointmentsList(userId) {
+            const listContainer = document.getElementById('user-appointments-list');
+            listContainer.innerHTML = '';
+
+            const userAppointments = DUMMY_APPOINTMENTS
+                .filter(a => a.userId === userId)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            if (userAppointments.length === 0) {
+                listContainer.innerHTML = '<p class="text-gray-500 italic p-4 bg-white rounded-lg shadow-md">No upcoming sessions booked.</p>';
+                return;
+            }
+
+            userAppointments.forEach(appt => {
+                const apptDiv = document.createElement('div');
+                const isUpcoming = new Date(appt.date) >= new Date(new Date().toDateString());
+                
+                apptDiv.className = `bg-white p-4 rounded-lg shadow-md border-l-4 ${isUpcoming ? 'border-primary-teal' : 'border-gray-300'}`;
+                apptDiv.innerHTML = `
+                    <p class="text-lg font-semibold text-gray-800">${appt.professionalName}</p>
+                    <p class="text-sm text-gray-600">${appt.date} at ${appt.time} (${appt.type})</p>
+                    ${isUpcoming 
+                        ? `<a href="${appt.zoomLink}" target="_blank" class="text-secondary-lavender hover:underline text-sm font-medium mt-1 inline-block">
+                           <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m-5 4v-4m0 0H8m2 0h2m-2 0V9m0 0H9m-1 4H6a2 2 0 01-2-2V8a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H8z"></path></svg>
+                           Join Zoom Meeting
+                           </a>`
+                        : '<span class="text-xs font-medium text-gray-400">PAST SESSION</span>'}
+                `;
+                listContainer.appendChild(apptDiv);
+            });
+        }
+        
+        function renderAdminBookingsTable() {
+            const tableBody = document.getElementById('admin-recent-bookings');
+            tableBody.innerHTML = '';
+            
+            // Sort by date descending (most recent first)
+            const sortedAppts = [...DUMMY_APPOINTMENTS].sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+            
+            sortedAppts.slice(0, 10).forEach(appt => {
+                const clientName = DUMMY_USERS[Object.keys(DUMMY_USERS).find(key => DUMMY_USERS[key].id === appt.userId)]?.name || 'Unknown User';
+                const status = (new Date(appt.date) > new Date()) ? 'Confirmed' : 'Completed';
+                const statusColor = (status === 'Confirmed') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-4 whitespace-nowrap">${appt.time}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">${clientName}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">${appt.professionalName.split(',')[0]}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                         <a href="${appt.zoomLink}" target="_blank" class="text-secondary-lavender hover:underline text-xs font-medium">${appt.zoomLink.substring(0, 30)}...</a>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">${status}</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+
+        // --- Calendar Logic (Generic for Dashboard) ---
+        function renderCalendar(containerId, role, date) {
+            // Re-uses existing calendar logic for dashboards
+            const container = document.getElementById(containerId);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+            const daysInMonth = getDaysInMonth(date);
+            const firstDay = getFirstDayOfMonth(date);
+            const today = new Date();
+            const todayDate = today.getDate();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+            const userId = currentState.user ? currentState.user.id : null;
+
+
+            // Navigation and Title
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="changeDashboardMonth('${containerId}', -1)" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">&leftarrow;</button>
+                    <h4 class="text-xl font-semibold text-primary-teal">${monthName} ${year}</h4>
+                    <button onclick="changeDashboardMonth('${containerId}', 1)" class="p-2 text-gray-600 hover:bg-gray-100 rounded-full">&rightarrow;</button>
+                </div>
+                <div class="calendar-grid text-sm font-medium text-gray-500 mb-2">
+                    <span class="text-red-500 text-center p-2">Sun</span>
+                    <span class="text-center p-2">Mon</span>
+                    <span class="text-center p-2">Tue</span>
+                    <span class="text-center p-2">Wed</span>
+                    <span class="text-center p-2">Thu</span>
+                    <span class="text-center p-2">Fri</span>
+                    <span class="text-center p-2">Sat</span>
+                </div>
+                <div id="${containerId}-days" class="calendar-grid">
+                    <!-- Days will be inserted here -->
+                </div>
+                <div id="${containerId}-details" class="mt-6 p-4 bg-accent-light rounded-lg">
+                    <p class="text-gray-700 italic">Select a day on the calendar to see details.</p>
+                </div>
+            `;
+            
+            const daysContainer = document.getElementById(`${containerId}-days`);
+            
+            // Render padding days (empty cells before the 1st)
+            for (let i = 0; i < firstDay; i++) {
+                daysContainer.innerHTML += '<div class="p-2 text-center text-gray-300"></div>';
+            }
+
+            // Render actual days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const appts = getAppointmentsForDay(day, date, role, userId);
+                const isToday = isCurrentMonth && day === todayDate;
+                const apptCount = appts.length;
+                
+                let dayClasses = 'calendar-day p-2 rounded-lg text-center shadow-sm relative ';
+                
+                if (isToday) {
+                    dayClasses += 'bg-secondary-lavender text-white font-bold ring-2 ring-primary-teal';
+                } else if (apptCount > 0) {
+                    dayClasses += 'bg-primary-teal/20 hover:bg-primary-teal/40 text-gray-800 font-semibold';
+                } else {
+                    dayClasses += 'bg-white hover:bg-gray-50 text-gray-800';
+                }
+
+                daysContainer.innerHTML += `
+                    <div class="${dayClasses}" onclick="showDayDetails('${containerId}', ${day}, '${role}', '${userId}')">
+                        <span class="${isToday ? 'text-white' : 'text-gray-900'}">${day}</span>
+                        ${apptCount > 0 ? `<div class="mt-1 text-xs font-medium text-primary-teal">${apptCount} Session${apptCount > 1 ? 's' : ''}</div>` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        window.showDayDetails = function(containerId, day, role, userId) {
+            const monthDate = containerId.includes('user') ? currentState.currentMonth : currentState.currentMonth; // Use the correct month state
+            const detailsContainer = document.getElementById(`${containerId}-details`);
+            const appts = getAppointmentsForDay(day, monthDate, role, userId);
+            const dateString = new Date(monthDate.getFullYear(), monthDate.getMonth(), day).toDateString();
+            
+            let detailsHtml = `<h5 class="text-lg font-bold text-gray-900 mb-3">${dateString}</h5>`;
+
+            if (appts.length === 0) {
+                detailsHtml += `<p class="text-gray-700 italic">No appointments scheduled for this day.</p>`;
+            } else {
+                detailsHtml += `<ul class="space-y-3">`;
+                appts.forEach(appt => {
+                    const statusColor = appt.type === 'Video Call' ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800';
+                    detailsHtml += `
+                        <li class="p-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+                            <div class="flex justify-between items-center">
+                                <p class="font-medium text-gray-900">${appt.time} with ${appt.professionalName}</p>
+                                <span class="text-xs font-semibold px-2 py-1 rounded-full ${statusColor}">${appt.type}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 truncate mt-1">
+                                <span class="font-semibold">Zoom:</span> <a href="${appt.zoomLink}" target="_blank" class="text-secondary-lavender hover:underline">${appt.zoomLink}</a>
+                            </p>
+                            ${role === 'admin' ? `<p class="text-sm text-gray-600">Client ID: ${appt.userId}</p>` : ''}
+                        </li>
+                    `;
+                });
+                detailsHtml += `</ul>`;
+            }
+
+            detailsContainer.innerHTML = detailsHtml;
+        }
+
+        window.changeDashboardMonth = function(containerId, delta) {
+            currentState.currentMonth.setMonth(currentState.currentMonth.getMonth() + delta);
+
+            const role = containerId.includes('user') ? 'user' : 'admin';
+            renderCalendar(containerId, role, currentState.currentMonth);
+        }
+        
+        // --- Booking View Functions ---
+        
+        function renderProfessionalSelector() {
+            const listContainer = document.getElementById('professional-list');
+            listContainer.innerHTML = '';
+            
+            DUMMY_PROFESSIONALS.forEach(p => {
+                const isSelected = currentState.selectedProfessional && currentState.selectedProfessional.id === p.id;
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl shadow-md border cursor-pointer transition duration-200 ${isSelected ? 'bg-primary-teal text-white border-primary-teal ring-4 ring-primary-teal/50' : 'bg-white text-gray-800 hover:bg-gray-50'}`;
+                card.onclick = () => selectProfessional(p);
+                
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${p.avatar}" alt="${p.name}" class="w-10 h-10 rounded-full object-cover ${isSelected ? 'border-2 border-white' : ''}">
+                        <div>
+                            <p class="font-bold">${p.name.split(',')[0]}</p>
+                            <p class="text-xs ${isSelected ? 'text-gray-200' : 'text-gray-500'}">${p.specialty}</p>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+        
+        function selectProfessional(professional) {
+            currentState.selectedProfessional = professional;
+            currentState.selectedDate = null; // Reset date selection
+            currentState.selectedTime = null; // Reset time selection
+            document.getElementById('scheduling-steps').classList.remove('opacity-50', 'pointer-events-none');
+            renderProfessionalSelector(); // Re-render to show selection
+            renderBookingCalendar(); // Re-render to enable date picking
+            updateTimeSlots(); // Clear slots
+        }
+        
+        // Re-usable calendar logic for booking
+        function renderBookingCalendar() {
+            const date = currentState.bookingMonth;
+            const container = document.getElementById('booking-calendar-container');
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const monthName = date.toLocaleDateString('en-US', { month: 'long' });
+            const daysInMonth = getDaysInMonth(date);
+            const firstDay = getFirstDayOfMonth(date);
+            
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="changeBookingMonth(-1)" class="p-2 text-gray-600 hover:bg-gray-200 rounded-full">&leftarrow;</button>
+                    <h4 class="text-xl font-semibold text-primary-teal">${monthName} ${year}</h4>
+                    <button onclick="changeBookingMonth(1)" class="p-2 text-gray-600 hover:bg-gray-200 rounded-full">&rightarrow;</button>
+                </div>
+                <div class="calendar-grid text-sm font-medium text-gray-500 mb-2">
+                    <span class="text-red-500 text-center p-2">Sun</span>
+                    <span class="text-center p-2">Mon</span>
+                    <span class="text-center p-2">Tue</span>
+                    <span class="text-center p-2">Wed</span>
+                    <span class="text-center p-2">Thu</span>
+                    <span class="text-center p-2">Fri</span>
+                    <span class="text-center p-2">Sat</span>
+                </div>
+                <div id="booking-calendar-days" class="calendar-grid">
+                    <!-- Days will be inserted here -->
+                </div>
+            `;
+
+            const daysContainer = document.getElementById(`booking-calendar-days`);
+            for (let i = 0; i < firstDay; i++) {
+                daysContainer.innerHTML += '<div class="p-2 text-center text-gray-300"></div>';
+            }
+            
+            const today = new Date(new Date().toDateString());
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateToCheck = new Date(year, month, day);
+                const isPast = dateToCheck < today;
+                const dateString = dateToCheck.toISOString().split('T')[0];
+                const isSelected = currentState.selectedDate === dateString;
+                
+                let dayClasses = 'calendar-day p-2 rounded-lg text-center shadow-sm relative ';
+                
+                if (isPast) {
+                    dayClasses += 'bg-gray-100 text-gray-400 cursor-not-allowed';
+                } else if (isSelected) {
+                    dayClasses += 'bg-secondary-lavender text-white font-bold ring-2 ring-primary-teal';
+                } else {
+                    dayClasses += 'bg-white hover:bg-gray-100 text-gray-800';
+                }
+
+                daysContainer.innerHTML += `
+                    <div class="${dayClasses}" ${isPast ? '' : `onclick="selectDate('${dateString}')"`}>
+                        <span class="font-bold">${day}</span>
+                        ${!isPast && !isSelected ? `<div class="mt-1 text-xs font-medium text-primary-teal/70">Available</div>` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        window.changeBookingMonth = function(delta) {
+            currentState.bookingMonth.setMonth(currentState.bookingMonth.getMonth() + delta);
+            renderBookingCalendar();
+            updateTimeSlots();
+        }
+        
+        window.selectDate = function(dateString) {
+            currentState.selectedDate = dateString;
+            currentState.selectedTime = null;
+            renderBookingCalendar(); // Re-render to highlight selection
+            updateTimeSlots();
+            document.getElementById('booking-error').classList.add('hidden');
+        }
+
+        function updateTimeSlots() {
+            const slotsContainer = document.getElementById('time-slots');
+            slotsContainer.innerHTML = '';
+            
+            document.getElementById('selected-date-display').textContent = currentState.selectedDate ? new Date(currentState.selectedDate).toDateString() : '...';
+
+            if (!currentState.selectedDate) {
+                slotsContainer.innerHTML = '<p class="text-gray-500 italic">Select a date above to see available slots.</p>';
+                return;
+            }
+
+            const mockAvailableSlots = ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'];
+            
+            mockAvailableSlots.forEach(time => {
+                const isSelected = currentState.selectedTime === time;
+                const button = document.createElement('button');
+                button.className = `px-4 py-2 text-sm font-semibold rounded-full transition duration-150 shadow-md ${isSelected ? 'bg-primary-teal text-white ring-2 ring-primary-teal/50' : 'bg-white text-primary-teal border border-primary-teal hover:bg-primary-teal hover:text-white'}`;
+                button.textContent = time;
+                button.onclick = () => selectTime(time);
+                slotsContainer.appendChild(button);
+            });
+
+            // Add final book button if a time is selected
+            if (currentState.selectedTime) {
+                slotsContainer.innerHTML += `<button class="w-full mt-6 py-3 text-lg font-bold text-white bg-secondary-lavender rounded-xl shadow-xl hover:bg-blue-500 transition duration-300" onclick="handleZoomBooking()">
+                    Confirm & Book Zoom Session
+                </button>`;
+            }
+        }
+
+        function selectTime(time) {
+            currentState.selectedTime = time;
+            updateTimeSlots(); // Re-render to highlight selection and show final button
+            document.getElementById('booking-error').classList.add('hidden');
+        }
+
+        window.handleZoomBooking = function() {
+            if (!currentState.selectedProfessional || !currentState.selectedDate || !currentState.selectedTime) {
+                document.getElementById('booking-error').textContent = 'Please select a professional, date, and time slot.';
+                document.getElementById('booking-error').classList.remove('hidden');
+                return;
+            }
+            
+            // 1. Mock Booking ID and Zoom Link Generation
+            const newId = DUMMY_APPOINTMENTS.length + 1;
+            const zoomLink = mockGenerateZoomLink(newId);
+            
+            // 2. Create the New Appointment Object
+            const newAppointment = {
+                id: newId,
+                userId: currentState.user.id,
+                date: currentState.selectedDate,
+                time: currentState.selectedTime,
+                professionalId: currentState.selectedProfessional.id,
+                professionalName: currentState.selectedProfessional.name,
+                type: 'Video Call',
+                zoomLink: zoomLink,
+            };
+
+            // 3. Save to Mock Database (Array)
+            DUMMY_APPOINTMENTS.push(newAppointment);
+
+            // 4. Update UI to confirm
+            const summaryBox = document.getElementById('booking-summary');
+            const messageElement = document.getElementById('booking-message');
+
+            messageElement.innerHTML = `
+                Your session with **${newAppointment.professionalName}** has been confirmed for **${new Date(newAppointment.date).toDateString()}** at **${newAppointment.time}**.
+                <br>Your dedicated Zoom link is: <a href="${zoomLink}" target="_blank" class="text-secondary-lavender underline font-semibold break-all">${zoomLink}</a>
+                <br>You can view this session on your dashboard.
+            `;
+            summaryBox.classList.remove('hidden');
+            
+            // 5. Reset selection state and redirect after delay
+            setTimeout(() => {
+                showView('user-dashboard'); 
+            }, 3000);
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            renderServices();
+            // Render initial provider list for Admin panel (hidden by default)
+            document.querySelector('#view-admin-dashboard .lg\\:col-span-1 ul').innerHTML = DUMMY_PROFESSIONALS.map(p => `<li>${p.name}</li>`).join('');
+
+            // Initialize view (always start at home)
+            showView('home');
+        });
+    </script>
+</body>
+</html>

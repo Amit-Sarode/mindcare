@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  /* 1. Define Custom Colors */
+  /* These automatically become utility classes like bg-primary-teal, text-secondary-lavender */
+  --color-primary-teal: #20B2AA;
+  --color-secondary-lavender: #93C5FD;
+  --color-accent-light: #F0F9FF;
+  --color-mind-bg: #F9FAFB;
+
+  /* 2. Define Custom Animation */
+  /* This creates the utility class: animate-pulse-calm */
+  --animate-pulse-calm: pulse_calm 2s ease-in-out infinite;
+
+  /* 3. Define Keyframes */
+  @keyframes pulse_calm {
+    0%, 100% { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+    50% { 
+      opacity: 0.8; 
+      transform: scale(0.99); 
+    }
+  }
+}
