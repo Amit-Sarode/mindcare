@@ -26,6 +26,38 @@ const cardVariant = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
+const FAQS = [
+  {
+    question: "What services do you offer?",
+    answer: "We offer a comprehensive range of mental health services including Psychiatric Evaluations, Medication Management, Psychotherapy (CBT & DBT), Adult ADHD Assessments, and specialized care for Anxiety and Depression."
+  },
+  {
+    question: "How does online payment work?",
+    answer: "We require payment at the time of booking to secure your slot. We use Stripe, a secure global payment processor, which accepts all major credit and debit cards. Your financial data is never stored on our servers."
+  },
+  {
+    question: "Do you accept insurance or Medicare?",
+    answer: "We are currently a private billing practice. However, we can provide a detailed invoice (superbill) after your session that you may submit to your insurance provider or Medicare for potential reimbursement, depending on your plan."
+  },
+  // {
+  //   question: "Can I get prescriptions through telehealth?",
+  //   answer: "Yes. If your psychiatrist deems medication necessary for your treatment plan, e-prescriptions can be sent directly to your preferred pharmacy immediately after your consultation."
+  // },
+  // {
+  //   question: "Is my video session private and secure?",
+  //   answer: "Absolutely. We use HIPAA and GDPR-compliant video conferencing tools that are end-to-end encrypted. Your sessions are strictly confidential and are never recorded."
+  // },
+  {
+    question: "What is your cancellation policy?",
+    answer: "We understand that life happens. You can reschedule or cancel your appointment up to 24 hours in advance for a full refund. Cancellations made within 24 hours of the appointment time may incur a cancellation fee."
+  },
+  {
+    question: "Do you offer emergency crisis support?",
+    answer: "MindCare is not an emergency service. If you or someone you know is in immediate danger or experiencing a crisis, please call 000 (Australia) or 911 (US), or visit your nearest hospital emergency department immediately."
+  }
+];
+
+
 const SERVICES = [
   { 
     name: "Psychiatric Evaluations", 
@@ -212,39 +244,51 @@ const Home = () => {
       </div>
 
       {/* FAQ Snippet with AnimatePresence */}
-      <div className="max-w-4xl mx-auto px-4 py-12 mb-16">
-          <h3 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h3>
-          <div className="space-y-4">
-             {['What services do you offer?', 'How does online payment work?'].map((q, i) => (
-                <div key={i} className="border rounded-lg overflow-hidden">
-                   <button onClick={() => toggleFaq(i)} className="w-full text-left p-5 font-semibold bg-gray-50 flex justify-between items-center hover:bg-gray-100 transition">
-                      {q} 
-                      <motion.span 
-                        animate={{ rotate: activeFaq === i ? 45 : 0 }}
-                      >
-                        {activeFaq === i ? '-' : '+'}
-                      </motion.span>
-                   </button>
-                   
-                   <AnimatePresence>
-                     {activeFaq === i && (
-                       <motion.div 
-                         initial={{ height: 0, opacity: 0 }}
-                         animate={{ height: "auto", opacity: 1 }}
-                         exit={{ height: 0, opacity: 0 }}
-                         transition={{ duration: 0.3 }}
-                         className="overflow-hidden"
-                       >
-                         <div className="p-5 bg-white text-gray-600 border-t">
-                           Sample answer text that slides down smoothly when you click the question...
-                         </div>
-                       </motion.div>
-                     )}
-                   </AnimatePresence>
-                </div>
-             ))}
-          </div>
+     <div className="max-w-4xl mx-auto px-4 py-12 mb-16">
+  <motion.h3 
+    initial={{ opacity: 0, y: 10 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    className="text-3xl font-bold text-center mb-8"
+  >
+    Frequently Asked Questions
+  </motion.h3>
+
+  <div className="space-y-4">
+    {FAQS.map((faq, i) => (
+      <div key={i} className="border rounded-lg overflow-hidden bg-white shadow-sm">
+        <button 
+          onClick={() => toggleFaq(i)} 
+          className="w-full text-left p-5 font-semibold bg-gray-50 flex justify-between items-center hover:bg-gray-100 transition-colors"
+        >
+          {faq.question} 
+          <motion.span 
+            animate={{ rotate: activeFaq === i ? 45 : 0 }}
+            className="text-[var(--color-primary-teal)] text-xl"
+          >
+            {activeFaq === i ? '−' : '+'} 
+          </motion.span>
+        </button>
+        
+        <AnimatePresence>
+          {activeFaq === i && (
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="p-5 text-gray-600 border-t border-gray-100 leading-relaxed">
+                {faq.answer}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+    ))}
+  </div>
+</div>
     </div>
   );
 };

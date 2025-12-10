@@ -20,7 +20,7 @@ const Login = () => {
       if (email.includes('admin')) {
           navigate('/admin');
       } else {
-          navigate('/dashboard');
+          navigate('/booking');
       }
     } else {
       setError('Login failed. Please try again.');
