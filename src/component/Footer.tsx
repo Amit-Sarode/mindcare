@@ -67,12 +67,12 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Medical Disclaimer */}
+        {/* Medical Disclaimer
         <div className="border-t border-gray-800 mt-12 pt-8">
            <p className="text-xs text-gray-500 text-justify">
              <strong>Medical Disclaimer:</strong> The content on this website is for informational purposes only and is not intended to substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. MindCare does not provide emergency services.
            </p>
-        </div>
+        </div> */}
 
         {/* Bottom Bar: Copyright & Socials */}
         <div className="border-t border-gray-800 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
