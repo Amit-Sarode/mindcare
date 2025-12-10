@@ -1,11 +1,30 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Service } from '../types';
-import DrImage from '../assets/mid-shot-woman-therapist-with-clipboard.jpg'
+import { motion, AnimatePresence } from 'framer-motion'; // Import framer-motion
+import DrImage from '../assets/mid-shot-woman-therapist-with-clipboard.jpg';
 
-// Inside src/pages/Home.tsx or a separate data file
+// Define Animation Variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1, // Delay between each child animation
+      delayChildren: 0.2
+    }
+  }
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+};
 
 const SERVICES = [
   { 
@@ -47,115 +66,181 @@ const Home = () => {
   const toggleFaq = (index: number) => setActiveFaq(activeFaq === index ? null : index);
 
   return (
-    <div className="bg-mind-bg">
+    <div className="bg-mind-bg overflow-x-hidden"> {/* Prevent horizontal scroll during animations */}
+      
       {/* Hero */}
       <section className="bg-gradient-to-b from-mind-bg to-teal-50 py-20 sm:py-32">
         <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-           <div>
+           {/* Text Content */}
+           <motion.div 
+             initial="hidden" 
+             animate="visible" 
+             variants={fadeInUp}
+           >
               <h1 className="text-4xl sm:text-6xl font-extrabold text-gray-900 leading-tight">
                 Cultivate Your Inner Peace. <br /> Start With MindCare.
               </h1>
               <p className="mt-4 text-xl text-gray-600">
                 Connect with certified Australian mental wellness professionals instantly.
               </p>
-              <div className="mt-8 bg-white p-4 rounded-xl shadow-2xl flex items-center justify-between border border-gray-100 max-w-md">
+              
+              <motion.div 
+                className="mt-8 bg-white p-4 rounded-xl shadow-2xl flex items-center justify-between border border-gray-100 max-w-md"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
                  <div>
-                    <p className="text-lg font-bold text-gray-900">Online blow line Session</p>
+                    <p className="text-lg font-bold text-gray-900">Start your session</p>
                     <p className="text-sm text-gray-600">Secure telehealth appointments.</p>
                  </div>
-                 <button onClick={() => navigate('/booking')} className="px-6 py-3 bg-primary-teal text-white font-bold rounded-lg shadow hover:bg-teal-600 transition animate-pulse-calm hover:animate-none">
+                 <motion.button 
+                   whileHover={{ scale: 1.05 }}
+                   whileTap={{ scale: 0.95 }}
+                   onClick={() => navigate('/booking')} 
+                   className="px-6 py-3 bg-primary-teal text-white font-bold rounded-lg shadow hover:bg-teal-600 transition"
+                 >
                     Book Now
-                 </button>
-              </div>
-           </div>
-           <div className="hidden md:flex justify-center">
+                 </motion.button>
+              </motion.div>
+           </motion.div>
+
+           {/* Hero Image */}
+           <motion.div 
+             className="hidden md:flex justify-center"
+             initial={{ opacity: 0, x: 50 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ duration: 0.8, delay: 0.2 }}
+           >
               <img src={DrImage} alt="Doctor" className="rounded-3xl shadow-2xl border-4 border-white object-cover h-96 w-full max-w-md" />
-           </div>
+           </motion.div>
         </div>
       </section>
 
       {/* Services */}
-    <div id="services" className="bg-white py-24 sm:py-32">
-  <div className="max-w-7xl mx-auto px-6 lg:px-8">
-    
-    {/* Section Header */}
-    <div className="mx-auto max-w-2xl text-center mb-16">
-      <h2 className="text-base font-semibold leading-7 text-[var(--color-primary-teal)] uppercase tracking-wide">
-        Holistic Care
-      </h2>
-      <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-        Comprehensive Psychiatric Services
-      </p>
-      <p className="mt-6 text-lg leading-8 text-gray-600">
-        We combine modern medical science with compassionate therapy. Our psychiatrists provide a full spectrum of care, from diagnosis to medication management.
-      </p>
-    </div>
-
-    {/* Cards Grid */}
-    <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-      <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3">
-        {SERVICES.map((service) => (
-          <div 
-            key={service.name} 
-            className="group relative bg-white p-8 rounded-2xl shadow-sm ring-1 ring-gray-200 hover:shadow-xl hover:ring-[var(--color-primary-teal)] transition-all duration-300 hover:-translate-y-1"
+      <div id="services" className="bg-white py-24 sm:py-32">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          
+          {/* Section Header */}
+          <motion.div 
+            className="mx-auto max-w-2xl text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
           >
-            {/* Icon Container */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color-accent-light)] group-hover:bg-[var(--color-primary-teal)] transition-colors duration-300 mb-6">
-              <svg 
-                className="h-6 w-6 text-[var(--color-primary-teal)] group-hover:text-white transition-colors duration-300" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                strokeWidth="1.5" 
-                stroke="currentColor" 
-                aria-hidden="true"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d={service.iconPath} />
-              </svg>
-            </div>
+            <h2 className="text-base font-semibold leading-7 text-[var(--color-primary-teal)] uppercase tracking-wide">
+              Holistic Care
+            </h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Comprehensive Psychiatric Services
+            </p>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              We combine modern medical science with compassionate therapy. Our psychiatrists provide a full spectrum of care, from diagnosis to medication management.
+            </p>
+          </motion.div>
 
-            {/* Content */}
-            <dt className="text-xl font-semibold leading-7 text-gray-900 group-hover:text-[var(--color-primary-teal)] transition-colors">
-              {service.name}
-            </dt>
-            <dd className="mt-4 text-base leading-7 text-gray-600">
-              {service.description}
-            </dd>
+          {/* Cards Grid with Staggered Animation */}
+          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+            <motion.dl 
+              className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-3"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+            >
+              {SERVICES.map((service) => (
+                <motion.div 
+                  key={service.name} 
+                  variants={cardVariant}
+                  className="group relative bg-white p-8 rounded-2xl shadow-sm ring-1 ring-gray-200 hover:shadow-xl hover:ring-[var(--color-primary-teal)] transition-all duration-300"
+                >
+                  {/* Icon Container */}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--color-accent-light)] group-hover:bg-[var(--color-primary-teal)] transition-colors duration-300 mb-6">
+                    <svg 
+                      className="h-6 w-6 text-[var(--color-primary-teal)] group-hover:text-white transition-colors duration-300" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      strokeWidth="1.5" 
+                      stroke="currentColor" 
+                      aria-hidden="true"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d={service.iconPath} />
+                    </svg>
+                  </div>
 
-            {/* 'Learn More' Arrow (Decorative Link) */}
-            <div className="mt-6 flex items-center text-sm font-semibold text-[var(--color-primary-teal)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-               <span>Learn more</span>
-               <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-            </div>
+                  {/* Content */}
+                  <dt className="text-xl font-semibold leading-7 text-gray-900 group-hover:text-[var(--color-primary-teal)] transition-colors">
+                    {service.name}
+                  </dt>
+                  <dd className="mt-4 text-base leading-7 text-gray-600">
+                    {service.description}
+                  </dd>
+
+                  {/* 'Learn More' Arrow */}
+                  <div className="mt-6 flex items-center text-sm font-semibold text-[var(--color-primary-teal)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                     <span>Learn more</span>
+                     <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.dl>
           </div>
-        ))}
-      </dl>
-    </div>
-    
-    {/* Bottom CTA */}
-    <div className="mt-16 text-center">
-        <button 
-           onClick={() => navigate('/booking')} 
-           className="px-8 py-3.5 text-base font-semibold text-white bg-[var(--color-primary-teal)] rounded-full shadow-lg hover:bg-teal-600 transition duration-300"
-        >
-            Book an Initial Evaluation
-        </button>
-        <p className="mt-4 text-sm text-gray-500">
-            Accepting new patients for online video consultations.
-        </p>
-    </div>
+          
+          {/* Bottom CTA */}
+          <motion.div 
+            className="mt-16 text-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
+              <motion.button 
+                 whileHover={{ scale: 1.05 }}
+                 whileTap={{ scale: 0.95 }}
+                 onClick={() => navigate('/booking')} 
+                 className="px-8 py-3.5 text-base font-semibold text-white bg-[var(--color-primary-teal)] rounded-full shadow-lg hover:bg-teal-600 transition duration-300"
+              >
+                  Book an Initial Evaluation
+              </motion.button>
+              <p className="mt-4 text-sm text-gray-500">
+                  Accepting new patients for online video consultations.
+              </p>
+          </motion.div>
 
-  </div>
-</div>
-      {/* FAQ Snippet */}
+        </div>
+      </div>
+
+      {/* FAQ Snippet with AnimatePresence */}
       <div className="max-w-4xl mx-auto px-4 py-12 mb-16">
           <h3 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h3>
           <div className="space-y-4">
              {['What services do you offer?', 'How does online payment work?'].map((q, i) => (
                 <div key={i} className="border rounded-lg overflow-hidden">
-                   <button onClick={() => toggleFaq(i)} className="w-full text-left p-5 font-semibold bg-gray-50 flex justify-between">
-                      {q} <span>{activeFaq === i ? '-' : '+'}</span>
+                   <button onClick={() => toggleFaq(i)} className="w-full text-left p-5 font-semibold bg-gray-50 flex justify-between items-center hover:bg-gray-100 transition">
+                      {q} 
+                      <motion.span 
+                        animate={{ rotate: activeFaq === i ? 45 : 0 }}
+                      >
+                        {activeFaq === i ? '-' : '+'}
+                      </motion.span>
                    </button>
-                   {activeFaq === i && <div className="p-5 bg-white text-gray-600 border-t">Sample answer text...</div>}
+                   
+                   <AnimatePresence>
+                     {activeFaq === i && (
+                       <motion.div 
+                         initial={{ height: 0, opacity: 0 }}
+                         animate={{ height: "auto", opacity: 1 }}
+                         exit={{ height: 0, opacity: 0 }}
+                         transition={{ duration: 0.3 }}
+                         className="overflow-hidden"
+                       >
+                         <div className="p-5 bg-white text-gray-600 border-t">
+                           Sample answer text that slides down smoothly when you click the question...
+                         </div>
+                       </motion.div>
+                     )}
+                   </AnimatePresence>
                 </div>
              ))}
           </div>

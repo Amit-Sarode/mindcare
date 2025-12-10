@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logo (1).png'
 
 const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-300 mt-auto">
-      {/* 1. Crisis / Emergency Banner (Crucial for Mental Health Sites) */}
+  
       <div className="bg-red-900/80 text-white py-3 px-4 text-center">
         <p className="text-sm font-medium">
           <span className="font-bold uppercase tracking-wider mr-2">Emergency:</span>
@@ -15,15 +15,20 @@ const Footer = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Added items-start to grid to ensure columns align to top */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
           
           {/* Column 1: Brand & Mission */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2 text-white">
-           
-             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="#fff" d="M14.84 16.26C17.86 16.83 20 18.29 20 20v2H4v-2c0-1.71 2.14-3.17 5.16-3.74L12 21l2.84-4.74M8 8h8v2a4 4 0 0 1-4 4a4 4 0 0 1-4-4V8m0-1l.41-4.1a1 1 0 0 1 1-.9h5.19c.51 0 .94.39.99.9L16 7H8m4-4h-1v1h-1v1h1v1h1V5h1V4h-1V3Z"/></svg>
-              <span className="text-2xl font-bold">MindCare</span>
-            </div>
+            {/* Removed complex flex wrapper. 'block' ensures top-left alignment naturally. */}
+            <Link to="/" className="block ">
+              <img 
+                className="w-48 h-auto brightness-0 invert" 
+                src={logo} 
+                alt="MindCare Logo"
+              />
+            </Link>
+            
             <p className="text-sm text-gray-400 leading-relaxed">
               Compassionate, evidence-based psychological support tailored to your unique journey. We are dedicated to cultivating your inner peace through accessible digital care.
             </p>
@@ -66,13 +71,6 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Medical Disclaimer
-        <div className="border-t border-gray-800 mt-12 pt-8">
-           <p className="text-xs text-gray-500 text-justify">
-             <strong>Medical Disclaimer:</strong> The content on this website is for informational purposes only and is not intended to substitute for professional medical advice, diagnosis, or treatment. Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. MindCare does not provide emergency services.
-           </p>
-        </div> */}
 
         {/* Bottom Bar: Copyright & Socials */}
         <div className="border-t border-gray-800 mt-6 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
