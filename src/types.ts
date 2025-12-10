@@ -15,15 +15,16 @@ export interface Professional {
 export interface Appointment {
   id: number;
   userId: string;
-  userName?: string; // For admin view
-  date: string; // YYYY-MM-DD
-  time: string;
+  userName?: string;
+  date: string;
+  time: string; // Start time
+  duration: string; // e.g., "30 min", "1 hr"
+  price: number; // e.g., 100, 150
   professionalId: string;
   professionalName: string;
   type: 'Video Call';
   zoomLink: string;
 }
-
 export interface Service {
   name: string;
   description: string;

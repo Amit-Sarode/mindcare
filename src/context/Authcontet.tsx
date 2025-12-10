@@ -7,15 +7,40 @@ interface AuthContextType {
   signup: (name: string, email: string) => boolean;
   logout: () => void;
   appointments: Appointment[];
-  addAppointment: (appt: Omit<Appointment, 'id' | 'zoomLink'>) => void;
+  // UPDATED: Added 'userName' to Omit to match implementation
+  addAppointment: (appt: Omit<Appointment, 'id' | 'zoomLink' | 'userName'>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock Initial Data
+// UPDATED: Added 'duration' and 'price' to mock data to match new Appointment type
 const INITIAL_APPOINTMENTS: Appointment[] = [
-  { id: 1, userId: 'u1', userName: 'Alex Johnson', date: '2025-12-10', time: '10:00 AM', professionalId: 'dr_chen', professionalName: 'Dr. Emily Chen, PhD', type: 'Video Call', zoomLink: 'https://zoom.us/j/101' },
-  { id: 2, userId: 'u1', userName: 'Alex Johnson', date: '2025-12-17', time: '02:00 PM', professionalId: 'caleb_jones', professionalName: 'Caleb Jones, LCSW', type: 'Video Call', zoomLink: 'https://zoom.us/j/102' },
+  { 
+    id: 1, 
+    userId: 'u1', 
+    userName: 'Alex Johnson', 
+    date: '2025-12-10', 
+    time: '10:00 AM', 
+    duration: '1 hr',
+    price: 150,
+    professionalId: 'dr_chen', 
+    professionalName: 'Dr. Emily Chen, PhD', 
+    type: 'Video Call', 
+    zoomLink: 'https://zoom.us/j/101' 
+  },
+  { 
+    id: 2, 
+    userId: 'u1', 
+    userName: 'Alex Johnson', 
+    date: '2025-12-17', 
+    time: '02:00 PM', 
+    duration: '30 min',
+    price: 100,
+    professionalId: 'caleb_jones', 
+    professionalName: 'Caleb Jones, LCSW', 
+    type: 'Video Call', 
+    zoomLink: 'https://zoom.us/j/102' 
+  },
 ];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -39,12 +64,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setUser(null);
 
-  const addAppointment = (appt: Omit<Appointment, 'id' | 'zoomLink'>) => {
+  const addAppointment = (appt: Omit<Appointment, 'id' | 'zoomLink' | 'userName'>) => {
     const newId = appointments.length + 1;
     // Mock Zoom link generation
     const zoomLink = `https://zoom.us/j/${Math.floor(Math.random() * 1000000000)}?pwd=secure`;
     
-    setAppointments([...appointments, { ...appt, id: newId, zoomLink, userName: user?.name }]);
+    const newAppointment: Appointment = {
+      ...appt,
+      id: newId,
+      zoomLink,
+      userName: user?.name // Auto-fill userName from current user state
+    };
+    
+    setAppointments([...appointments, newAppointment]);
   };
 
   return (

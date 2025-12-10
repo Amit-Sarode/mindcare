@@ -60,7 +60,7 @@ const Home = () => {
               </p>
               <div className="mt-8 bg-white p-4 rounded-xl shadow-2xl flex items-center justify-between border border-gray-100 max-w-md">
                  <div>
-                    <p className="text-lg font-bold text-gray-900">Online Zoom Session</p>
+                    <p className="text-lg font-bold text-gray-900">Online blow line Session</p>
                     <p className="text-sm text-gray-600">Secure telehealth appointments.</p>
                  </div>
                  <button onClick={() => navigate('/booking')} className="px-6 py-3 bg-primary-teal text-white font-bold rounded-lg shadow hover:bg-teal-600 transition animate-pulse-calm hover:animate-none">
