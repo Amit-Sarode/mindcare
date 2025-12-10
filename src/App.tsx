@@ -10,6 +10,9 @@ import Dashboard from './component/DashBoard';
 import Booking from './component/Booking';
 import Footer from './component/Footer'
 import AdminDashboard from './component/AdminDashboard';
+ import Blog from './component/Blog';
+import Contact from './component/Contact';
+import Register from './component/Register';
 function App() {
   return (
     <AuthProvider>
@@ -20,10 +23,12 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Login />} /> {/* Reusing login for simplicity */}
+              <Route path="/signup" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<AdminDashboard />} />
-              
+              <Route path="/blog" element={<Blog />} />
+<Route path="/contact" element={<Contact />} />
+
               <Route path="/booking" element={<Booking />} />
               {/* Add Admin Route if needed */}
               <Route path="*" element={<Navigate to="/" replace />} />
