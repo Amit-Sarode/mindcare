@@ -61,7 +61,7 @@ const Booking = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [cardDetails, setCardDetails] = useState({ number: '', expiry: '', cvc: '' });
-
+const [paymentMethod, setPaymentMethod] = useState('card'); 
   useEffect(() => {
     if (!user) navigate('/login');
   }, [user, navigate]);
@@ -252,59 +252,117 @@ const Booking = () => {
 
                 {/* Compact Payment UI - Slide in Animation */}
                 <AnimatePresence>
-                {selectedProfessional && selectedDate && selectedTime && (
-                    <motion.div 
-                        initial={{ opacity: 0, height: 0, y: 20 }}
-                        animate={{ opacity: 1, height: 'auto', y: 0 }}
-                        exit={{ opacity: 0, height: 0, y: 20 }}
-                        transition={{ duration: 0.4, ease: "easeInOut" }}
-                        className="overflow-hidden bg-white rounded-2xl shadow-lg border border-[var(--color-secondary-lavender)] relative"
+    {selectedProfessional && selectedDate && selectedTime && (
+        <motion.div 
+            initial={{ opacity: 0, height: 0, y: 20 }}
+            animate={{ opacity: 1, height: 'auto', y: 0 }}
+            exit={{ opacity: 0, height: 0, y: 20 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="overflow-hidden bg-white rounded-2xl shadow-lg border border-[var(--color-secondary-lavender)] relative"
+        >
+            <div className="p-5">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-secondary-lavender)] to-blue-400"></div>
+                <h3 className="text-md font-bold text-gray-800 mb-4">Payment Details</h3>
+                
+                {/* --- New: Payment Method Toggle --- */}
+                <div className="flex p-1 bg-gray-100 rounded-lg mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setPaymentMethod('card')}
+                        className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            paymentMethod === 'card' 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
                     >
-                        <div className="p-5">
-                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--color-secondary-lavender)] to-blue-400"></div>
-                            <h3 className="text-md font-bold text-gray-800 mb-4">Payment Details</h3>
-                            
-                            <form onSubmit={handlePaymentSubmit} className="space-y-3">
-                                <div>
-                                    <input 
-                                        type="text" required placeholder="Card Number"
-                                        className="w-full py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50 transition-shadow focus:shadow-md"
-                                        value={cardDetails.number} onChange={e => setCardDetails({...cardDetails, number: e.target.value})}
-                                    />
-                                </div>
-                                <div className="flex gap-3">
-                                    <input 
-                                        type="text" required placeholder="MM/YY"
-                                        className="w-1/2 py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50"
-                                        value={cardDetails.expiry} onChange={e => setCardDetails({...cardDetails, expiry: e.target.value})}
-                                    />
-                                    <input 
-                                        type="text" required placeholder="CVC"
-                                        className="w-1/2 py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50"
-                                        value={cardDetails.cvc} onChange={e => setCardDetails({...cardDetails, cvc: e.target.value})}
-                                    />
-                                </div>
+                        Card
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setPaymentMethod('netbanking')}
+                        className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                            paymentMethod === 'netbanking' 
+                            ? 'bg-white text-gray-800 shadow-sm' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                    >
+                        Net Banking
+                    </button>
+                </div>
 
-                                <motion.button 
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    type="submit" disabled={processing}
-                                    className="w-full mt-2 py-3 bg-gray-900 hover:bg-black text-white text-sm font-bold rounded-lg shadow-md transition-colors flex justify-center items-center"
-                                >
-                                    {processing ? (
-                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    ) : 'Pay & Confirm'}
-                                </motion.button>
-                                
-                                <div className="flex justify-center items-center gap-2 mt-2 opacity-50">
-                                    <span className="text-[10px] text-gray-500">Powered by Stripe</span>
-                                    <svg className="h-4" viewBox="0 0 38 24" fill="none"><path d="M2.5 12H35.5" stroke="currentColor" strokeLinecap="round"/><rect x="0.5" y="0.5" width="37" height="23" rx="3.5" stroke="currentColor"/></svg>
-                                </div>
-                            </form>
-                        </div>
-                    </motion.div>
-                )}
-                </AnimatePresence>
+                <form onSubmit={handlePaymentSubmit} className="space-y-3">
+                    
+                    {/* --- Conditional Rendering based on Payment Method --- */}
+                    {paymentMethod === 'card' ? (
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            transition={{ duration: 0.2 }}
+                            className="space-y-3"
+                        >
+                            <div>
+                                <input 
+                                    type="text" required placeholder="Card Number"
+                                    className="w-full py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50 transition-shadow focus:shadow-md"
+                                    value={cardDetails.number} onChange={e => setCardDetails({...cardDetails, number: e.target.value})}
+                                />
+                            </div>
+                            <div className="flex gap-3">
+                                <input 
+                                    type="text" required placeholder="MM/YY"
+                                    className="w-1/2 py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50"
+                                    value={cardDetails.expiry} onChange={e => setCardDetails({...cardDetails, expiry: e.target.value})}
+                                />
+                                <input 
+                                    type="text" required placeholder="CVC"
+                                    className="w-1/2 py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50"
+                                    value={cardDetails.cvc} onChange={e => setCardDetails({...cardDetails, cvc: e.target.value})}
+                                />
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div 
+                            initial={{ opacity: 0 }} 
+                            animate={{ opacity: 1 }} 
+                            transition={{ duration: 0.2 }}
+                        >
+                            <select 
+                                className="w-full py-2 px-3 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-[var(--color-primary-teal)] outline-none bg-gray-50 cursor-pointer"
+                                defaultValue=""
+                            >
+                                <option value="" disabled>Select your Bank</option>
+                                <option value="hdfc">HDFC Bank</option>
+                                <option value="sbi">State Bank of India</option>
+                                <option value="icici">ICICI Bank</option>
+                                <option value="axis">Axis Bank</option>
+                                <option value="kotak">Kotak Mahindra</option>
+                            </select>
+                            <p className="text-[10px] text-gray-500 mt-2 px-1">
+                                You will be redirected to your bank's secure login page to complete the transaction.
+                            </p>
+                        </motion.div>
+                    )}
+
+                    <motion.button 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit" disabled={processing}
+                        className="w-full mt-2 py-3 bg-gray-900 hover:bg-black text-white text-sm font-bold rounded-lg shadow-md transition-colors flex justify-center items-center"
+                    >
+                        {processing ? (
+                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        ) : (paymentMethod === 'card' ? 'Pay & Confirm' : 'Proceed to Bank')}
+                    </motion.button>
+                    
+                    {/* <div className="flex justify-center items-center gap-2 mt-2 opacity-50">
+                        <span className="text-[10px] text-gray-500">Secure Payment</span>
+                        <svg className="h-4" viewBox="0 0 38 24" fill="none"><path d="M2.5 12H35.5" stroke="currentColor" strokeLinecap="round"/><rect x="0.5" y="0.5" width="37" height="23" rx="3.5" stroke="currentColor"/></svg>
+                    </div> */}
+                </form>
+            </div>
+        </motion.div>
+    )}
+</AnimatePresence>
             </div>
         </div>
       )}

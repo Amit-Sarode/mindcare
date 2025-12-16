@@ -31,6 +31,7 @@ const Header = () => {
           <nav className="hidden md:flex space-x-8">
              <Link to="/" className="text-gray-600 hover:text-[var(--color-primary-teal)] transition font-medium">Home</Link>
             <Link to="/booking" className="text-gray-600 hover:text-[var(--color-primary-teal)] transition font-medium">Book Now</Link>
+         
             {/* New Links */}
             <Link to="/blog" className="text-gray-600 hover:text-[var(--color-primary-teal)] transition font-medium">Blog</Link>
             <Link to="/contact" className="text-gray-600 hover:text-[var(--color-primary-teal)] transition font-medium">Contact Us</Link>
